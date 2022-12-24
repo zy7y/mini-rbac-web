@@ -1,22 +1,44 @@
 <script setup lang="ts">
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
-import { reactive } from 'vue'
-import type { UnwrapRef } from 'vue'
-import type { FormProps } from 'ant-design-vue'
-
-interface FormState {
-  username: string
-  password: string
-}
-const formState: UnwrapRef<FormState> = reactive({
+import { reactive, ref } from 'vue'
+import type { FormInstance, Rule } from 'ant-design-vue/es/form'
+import type { Login } from '@/client'
+import { Service } from '@/client'
+const formState = reactive<Login>({
   username: 'admin',
   password: '123456'
 })
-const handleFinish: FormProps['onFinish'] = (values) => {
-  console.log(values, formState)
+const formRef = ref<FormInstance | null>()
+
+const rules: Record<string, Rule[]> = {
+  username: [
+    {
+      required: true,
+      min: 5,
+      max: 12,
+      trigger: 'change',
+      message: '请输入账号'
+    }
+  ],
+  password: [
+    {
+      required: true,
+      min: 6,
+      max: 12,
+      trigger: 'change',
+      message: '请输入密码'
+    }
+  ]
 }
-const handleFinishFailed: FormProps['onFinishFailed'] = (errors) => {
-  console.log(errors)
+
+const hadndleLogin = async () => {
+  try {
+    await formRef.value?.validateFields()
+  } catch (error) {
+    return
+  }
+  const res = await Service.loginLoginPost({ ...formState })
+  console.log(res)
 }
 </script>
 
@@ -24,21 +46,17 @@ const handleFinishFailed: FormProps['onFinishFailed'] = (errors) => {
   <div class="login">
     <div class="login-continer">
       <h2>Mini RBAC</h2>
-      <a-form
-        :model="formState"
-        @finish="handleFinish"
-        @finishFailed="handleFinishFailed"
-      >
-        <a-form-item>
-          <a-input v-model:value="formState.username" placeholder="账号">
+      <a-form :model="formState" :rules="rules" ref="formRef">
+        <a-form-item name="username">
+          <a-input v-model:value.trim="formState.username" placeholder="账号">
             <template #prefix
               ><UserOutlined style="color: rgba(0, 0, 0, 0.25)"
             /></template>
           </a-input>
         </a-form-item>
-        <a-form-item>
+        <a-form-item name="password">
           <a-input
-            v-model:value="formState.password"
+            v-model:value.trim="formState.password"
             type="password"
             placeholder="密码"
           >
@@ -53,6 +71,7 @@ const handleFinishFailed: FormProps['onFinishFailed'] = (errors) => {
             style="width: 100%"
             html-type="submit"
             :disabled="formState.username === '' || formState.password === ''"
+            @click="hadndleLogin"
           >
             登录
           </a-button>
