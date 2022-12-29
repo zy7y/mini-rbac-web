@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 
-import App from './App.vue'
+import App from './App'
 import pinia from './stores'
 import router from './router'
 

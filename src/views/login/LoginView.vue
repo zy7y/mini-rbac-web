@@ -3,7 +3,7 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
 import { reactive, ref } from 'vue'
 import type { FormInstance, Rule } from 'ant-design-vue/es/form'
 import type { Login } from '@/client'
-import { Service } from '@/client'
+import { useUserStore } from '@/stores'
 const formState = reactive<Login>({
   username: 'admin',
   password: '123456'
@@ -31,14 +31,15 @@ const rules: Record<string, Rule[]> = {
   ]
 }
 
+const userStore = useUserStore()
+
 const hadndleLogin = async () => {
   try {
     await formRef.value?.validateFields()
   } catch (error) {
     return
   }
-  const res = await Service.loginLoginPost({ ...formState })
-  console.log(res)
+  userStore.loginAction(formState)
 }
 </script>
 

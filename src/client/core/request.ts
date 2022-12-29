@@ -10,8 +10,9 @@ import type { ApiRequestOptions } from './ApiRequestOptions'
 import type { ApiResult } from './ApiResult'
 import { CancelablePromise } from './CancelablePromise'
 import type { OnCancel } from './CancelablePromise'
-import type { OpenAPIConfig } from './OpenAPI'
+import { OpenAPI, type OpenAPIConfig } from './OpenAPI'
 import { message } from 'ant-design-vue'
+import { useGlobalStore } from '@/stores'
 
 const isDefined = <T>(
   value: T | null | undefined
@@ -304,6 +305,9 @@ export const request = <T>(
       const headers = await getHeaders(config, options, formData)
 
       if (!onCancel.isCancelled) {
+        useGlobalStore().loading = true
+        OpenAPI.TOKEN = useGlobalStore().token
+        headers
         const response = await sendRequest<T>(
           config,
           options,
@@ -327,6 +331,7 @@ export const request = <T>(
           body: responseHeader ?? responseBody
         }
         catchErrorCodes(options, result)
+        useGlobalStore().loading = false
         if (result.status != 200 || result.body.code == 400) {
           message.error(result.body.msg)
         } else {
@@ -335,8 +340,17 @@ export const request = <T>(
         resolve(result.body)
       }
     } catch (error) {
+      useGlobalStore().loading = false
       message.error(`${error}`)
       reject(error)
     }
   })
+}
+
+if (process.env.NODE_ENV === 'production') {
+  OpenAPI.BASE = 'http://49.232.203.244:1855'
+}
+
+if (process.env.NODE_ENV === 'development') {
+  OpenAPI.BASE = '/api'
 }
