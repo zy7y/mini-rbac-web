@@ -1,8 +1,10 @@
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { Login, MenuInfoTree, UserDetail } from '@/client'
 import { Service } from '@/client'
 import { useGlobalStore } from './global'
+import router from '@/router'
+import { loadRoutes } from '@/utils/permissions'
 
 // pinia setup https://pinia.vuejs.org/zh/core-concepts/#setup-stores
 export const useUserStore = defineStore(
@@ -11,6 +13,16 @@ export const useUserStore = defineStore(
     const info = ref<UserDetail>()
     const menus = ref<MenuInfoTree[]>()
     const identifiers = ref<string[]>()
+
+    const firstMenu = computed(() => {
+      const firstMenuDir = menus.value?.at(0)
+      const firstMenuItem = firstMenuDir?.children?.at(0)
+      return {
+        openKey: [`${firstMenuDir?.id}`],
+        selectKey: [`${firstMenuItem?.id}`],
+        path: firstMenuItem?.path
+      }
+    })
 
     // 登录动作
     const loginAction = async (playod: Login) => {
@@ -34,10 +46,16 @@ export const useUserStore = defineStore(
         menus.value = permissionsRes.data.menus
         // 按钮权限
         identifiers.value = permissionsRes.data.identifiers
+
+        // 加载路由
+        loadRoutes(menus.value ?? [])
+
+        // 跳转第一个二级菜单页
+        router.push(firstMenu.value.path as string)
       }
     }
 
-    return { info, menus, identifiers, loginAction }
+    return { info, menus, identifiers, firstMenu, loginAction }
   },
   {
     persist: true
