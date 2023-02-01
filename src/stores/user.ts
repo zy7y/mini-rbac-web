@@ -24,6 +24,21 @@ export const useUserStore = defineStore(
       }
     })
 
+    // 根据角色id重新加载
+    const loadMenuWithRouterByRoleId = async (rid: number) => {
+      const permissionsRes = await Service.getRoleRoleIdGet(rid)
+      // 菜单权限
+      menus.value = permissionsRes.data.menus
+      // 按钮权限
+      identifiers.value = permissionsRes.data.identifiers
+
+      // 加载路由
+      loadRoutes(menus.value ?? [])
+
+      // 跳转第一个二级菜单页
+      router.push(firstMenu.value.path as string)
+    }
+
     // 登录动作
     const loginAction = async (playod: Login) => {
       const loginRes = await Service.loginLoginPost(playod)
@@ -39,23 +54,18 @@ export const useUserStore = defineStore(
         const currentRole = infoRes.data?.roles.find(
           (role) => (role.status = 5)
         )
-        const permissionsRes = await Service.getRoleRoleIdGet(
-          currentRole?.rid as number
-        )
-        // 菜单权限
-        menus.value = permissionsRes.data.menus
-        // 按钮权限
-        identifiers.value = permissionsRes.data.identifiers
-
-        // 加载路由
-        loadRoutes(menus.value ?? [])
-
-        // 跳转第一个二级菜单页
-        router.push(firstMenu.value.path as string)
+        await loadMenuWithRouterByRoleId(currentRole?.rid as number)
       }
     }
 
-    return { info, menus, identifiers, firstMenu, loginAction }
+    return {
+      info,
+      menus,
+      identifiers,
+      firstMenu,
+      loginAction,
+      loadMenuWithRouterByRoleId
+    }
   },
   {
     persist: true
