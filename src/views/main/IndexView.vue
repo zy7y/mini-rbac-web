@@ -23,7 +23,7 @@ const collapsed = ref<boolean>(false)
         :style="{
           margin: '24px 16px',
           padding: '24px',
-          background: '#fff',
+          background: 'rgb(240, 242, 245)',
           minHeight: '280px'
         }"
       >
