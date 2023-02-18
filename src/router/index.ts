@@ -1,4 +1,4 @@
-import { useGlobalStore } from '@/stores'
+import { useGlobalStore, useUserStore } from '@/stores'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -28,6 +28,10 @@ const router = createRouter({
 router.beforeEach((to) => {
   if (to.path !== '/login') {
     if (useGlobalStore().token) {
+      if (to.path == '/main') {
+        console.log(useUserStore().firstMenu)
+        return useUserStore().firstMenu.path ?? to.path
+      }
       return
     }
     return '/login'

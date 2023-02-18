@@ -58,13 +58,28 @@ export const useUserStore = defineStore(
       }
     }
 
+    // 获取用户列表
+    const getPageData = async (playod: IQueryUserParams) => {
+      const res = await Service.queryUserUserGet(
+        playod.offset,
+        playod.limit,
+        playod.status,
+        playod.ordering ?? '-created',
+        playod.username,
+        playod.nickname
+      )
+      return res
+    }
+
     return {
       info,
       menus,
       identifiers,
       firstMenu,
       loginAction,
-      loadMenuWithRouterByRoleId
+      loadMenuWithRouterByRoleId,
+      // 接口
+      getPageData
     }
   },
   {

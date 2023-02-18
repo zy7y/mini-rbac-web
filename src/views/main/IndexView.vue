@@ -21,7 +21,7 @@ const collapsed = ref<boolean>(false)
       </a-layout-header>
       <a-layout-content
         :style="{
-          margin: '24px 16px',
+          // margin: '24px 16px',
           padding: '24px',
           background: 'rgb(240, 242, 245)',
           minHeight: '280px'
