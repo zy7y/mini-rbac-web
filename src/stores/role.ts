@@ -1,10 +1,5 @@
-import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { Login, MenuInfoTree, UserDetail } from '@/client'
 import { Service } from '@/client'
-import { useGlobalStore } from './global'
-import router from '@/router'
-import { loadRoutes } from '@/utils/permissions'
 
 // pinia setup https://pinia.vuejs.org/zh/core-concepts/#setup-stores
 export const useRoleStore = defineStore(

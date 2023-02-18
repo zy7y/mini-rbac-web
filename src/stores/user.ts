@@ -1,6 +1,12 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { Login, MenuInfoTree, UserDetail } from '@/client'
+import type {
+  Login,
+  MenuInfoTree,
+  UserDetail,
+  UserSchema,
+  UserUpdate
+} from '@/client'
 import { Service } from '@/client'
 import { useGlobalStore } from './global'
 import router from '@/router'
@@ -71,6 +77,34 @@ export const useUserStore = defineStore(
       return res
     }
 
+    // 删除用户
+    const delData = async (id: number) => {
+      return await Service.delUserUserIdDelete(id)
+    }
+
+    // 获取用户信息
+    const getUserInfo = async (id: number) => {
+      return await Service.getUserUserIdGet(id)
+    }
+
+    // 创建用户
+    const createData = async (playod: UserSchema) => {
+      playod.roles = playod.roles.map((item, index) => ({
+        rid: item,
+        status: index == 0 ? 5 : 1
+      })) as any
+      return await Service.addUserUserPost(playod)
+    }
+
+    // 编辑用户
+    const updateData = async (id: number, playod: UserUpdate) => {
+      playod.roles = playod.roles.map((item, index) => ({
+        rid: item,
+        status: index == 0 ? 5 : 1
+      })) as any
+      return await Service.editUserUserIdPut(id, playod)
+    }
+
     return {
       info,
       menus,
@@ -79,7 +113,11 @@ export const useUserStore = defineStore(
       loginAction,
       loadMenuWithRouterByRoleId,
       // 接口
-      getPageData
+      getPageData,
+      delData,
+      getUserInfo,
+      createData,
+      updateData
     }
   },
   {
