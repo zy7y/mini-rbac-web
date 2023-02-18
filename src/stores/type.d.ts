@@ -9,3 +9,8 @@ interface IQueryUserParams extends IQueryAll {
   nickname?: string
   status?: number
 }
+
+interface IQueryRoleParams extends IQueryAll {
+  name?: string
+  status?: number
+}

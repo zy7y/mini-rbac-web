@@ -66,7 +66,7 @@ loadTableData()
       :columns="searchConf.columns"
     />
 
-    <div class="tablePage">
+    <a-card class="tablePage">
       <div class="head">
         <h2>{{ pageName + '列表' }}</h2>
         <a-button type="primary"> 新增</a-button>
@@ -86,7 +86,7 @@ loadTableData()
           </template>
         </template>
       </a-table>
-    </div>
+    </a-card>
 
     <!-- // 表格 -->
   </div>
