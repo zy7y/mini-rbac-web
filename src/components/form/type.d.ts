@@ -23,10 +23,22 @@ export interface IFormPlusItem {
   disabled?: boolean // 用
   hidden?: boolean // 隐藏
   rules?: RuleObject[] // 校验
+
+  // select
   mode?: 'multiple' | 'tags' | 'SECRET_COMBOBOX_MODE_DO_NOT_USE' | undefined // i下拉是否多选
   options?: DefaultOptionType[] // select options
   size?: SizeType // 尺寸
   style?: StyleValue
+
+  // tree
+  treeData?: DataNode[] // 数据
+  checkable?: boolean
+  fieldNames?: FieldNames
+  onCheck?: (checked: any[], e: any) => void // 选中事件
+  checkable?: boolean
+  checkedKeys?: expandedKeys // 选中
+  expandedKeys?: any // 展开的
+  selectedKeys?: any
 }
 
 // expose form

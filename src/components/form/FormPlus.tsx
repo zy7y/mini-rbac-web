@@ -1,5 +1,5 @@
 import { defineComponent, ref, toRefs } from 'vue'
-import { Col, Form, Input, Row, Select } from 'ant-design-vue'
+import { Col, Form, Input, Row, Select, Tree } from 'ant-design-vue'
 import type { FormPlusProps, IFormPlusItem } from './type'
 import type { FormInstance } from 'ant-design-vue/es/form'
 
@@ -42,6 +42,22 @@ export default defineComponent({
             disabled={item?.disabled}
             style={item?.style}
           ></Select>
+        )
+      }
+
+      // tree
+      if (item?.itemType == 'tree') {
+        return (
+          <Tree
+            checkable={item.checkable}
+            treeData={item.treeData}
+            fieldNames={item.fieldNames}
+            onCheck={item.onCheck}
+            v-model:checkedKeys={item.checkedKeys}
+            v-model:expandedKeys={item.expandedKeys}
+            v-model:selectedKeys={item.selectedKeys}
+            disabled={item?.disabled}
+          />
         )
       }
     }

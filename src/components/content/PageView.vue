@@ -77,7 +77,6 @@ const modalConfData = reactive<{
 })
 
 const clickModalOk = async (antForm: FormInstance) => {
-  modalConfData.visible = true
   if (modalConfData.type == 'del') {
     await props.storeObject['delData'](modalConfData.currentRow.id)
   } else {
@@ -197,6 +196,7 @@ watch(isRequest, async (newValue, oldValue) => {
 .page-content {
   width: 100%;
   height: 100%;
+  overflow: auto;
 }
 .tablePage {
   margin-top: 30px;

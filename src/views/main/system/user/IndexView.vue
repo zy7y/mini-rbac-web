@@ -92,7 +92,6 @@ const modalFormModel = reactive<{
 
 const modalEdit = async (record: any) => {
   modalFormModel.data = record
-  // todo 拿到当前的用户id, 获取角色
   const res = await userStore.getUserInfo(record.id)
   modalFormModel.data.roles = res.data?.roles.map((item) => item.rid) as any
 }
