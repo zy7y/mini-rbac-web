@@ -29,6 +29,13 @@ export interface IFormPlusItem {
   options?: DefaultOptionType[] // select options
   size?: SizeType // 尺寸
   style?: StyleValue
+  icons?: Object // 兼容icon
+  filterOption?: any // 筛选
+  showSearch?: boolean // 可搜说
+
+  // tree select
+  dropdownStyle?: CSSProperties // 下拉样式
+  filterTreeNode?: any //筛选
 
   // tree
   treeData?: DataNode[] // 数据

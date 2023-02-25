@@ -7,10 +7,12 @@ import type { ColumnType } from 'ant-design-vue/lib/table'
 import ModalForm from './ModalForm.vue'
 import type { FormInstance } from 'ant-design-vue'
 interface PageProps {
-  searchConf: FormPlusProps // 搜索表单
+  searchConf?: FormPlusProps // 搜索表单
   storeObject: Store // 使用的store
   tableColumns: ColumnType[] // table表格列
   pageName?: string
+  expand?: any // tree 适配
+  pagination?: any // 分页适配
 
   // modal
   modalConf: FormPlusProps
@@ -25,11 +27,13 @@ const isRequest = ref(true)
 const loadTableData = async () => {
   tableDatas.loading = true
   const res = await props.storeObject['getPageData']({
-    ...props.searchConf.model,
+    ...props.searchConf?.model,
     limit: tableDatas.pagination.pageSize,
     offset: tableDatas.pagination.current
   })
-  tableDatas.data = res.data?.items ?? []
+
+  // 需要分页的列表
+  tableDatas.data = res.data?.items ?? res.data
   tableDatas.pagination.total = res.data.total
   tableDatas.loading = false
   isRequest.value = false
@@ -147,13 +151,15 @@ watch(isRequest, async (newValue, oldValue) => {
 <template>
   <div class="page-content">
     <!-- 搜索 -->
-    <SearchForm
-      :row="searchConf.row"
-      @search="handleSearch"
-      @reset="handleReset"
-      :search-form="searchConf.model"
-      :columns="searchConf.columns"
-    />
+    <template v-if="searchConf">
+      <SearchForm
+        :row="searchConf.row"
+        @search="handleSearch"
+        @reset="handleReset"
+        :search-form="searchConf.model"
+        :columns="searchConf.columns"
+      />
+    </template>
 
     <a-card class="tablePage">
       <div class="head">
@@ -164,7 +170,11 @@ watch(isRequest, async (newValue, oldValue) => {
         :columns="tableColumns"
         :data-source="tableDatas.data"
         :loading="tableDatas.loading"
-        :pagination="tableDatas.pagination"
+        :pagination="
+          props?.pagination ? tableDatas.pagination : props?.pagination
+        "
+        :row-key="(record) => record.id"
+        @expand="props?.expand"
       >
         <template #bodyCell="{ column, record }">
           <template v-if="column.dataIndex === 'operation'">
@@ -180,6 +190,7 @@ watch(isRequest, async (newValue, oldValue) => {
     <!-- modal -->
     <ModalForm
       ref="modalFormRef"
+      :row="modalConf.row"
       :columns="modalConf.columns"
       :modal-visible="modalConfData.visible"
       :modal-title="modalTitle"

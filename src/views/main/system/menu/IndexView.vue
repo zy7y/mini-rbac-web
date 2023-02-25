@@ -1,107 +1,216 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { useMenuStore } from '@/stores/menu'
+import { h, onMounted, reactive, ref } from 'vue'
+import { icons, menuType, methodColor, methodMap, tableTree } from './conf'
+import { Tag } from 'ant-design-vue'
+import PageViewVue from '@/components/content/PageView.vue'
 const columns = [
   {
-    title: 'Name',
+    title: '名称',
     dataIndex: 'name',
     key: 'name'
   },
   {
-    title: 'Age',
-    dataIndex: 'age',
-    key: 'age',
-    width: '12%'
+    title: '路由',
+    dataIndex: 'path',
+    key: 'path',
+    width: 120
   },
   {
-    title: 'Address',
-    dataIndex: 'address',
-    width: '30%',
-    key: 'address'
-  }
-]
-const data = [
+    title: '类型',
+    dataIndex: 'type',
+    key: 'type',
+    width: 80,
+    customRender: ({ value }) => {
+      return menuType[value]
+    }
+  },
   {
-    key: 1,
-    name: 'John Brown sr.',
-    age: 60,
-    address: 'New York No. 1 Lake Park',
-    children: [
-      {
-        key: 11,
-        name: 'John Brown',
-        age: 42,
-        address: 'New York No. 2 Lake Park'
-      },
-      {
-        key: 12,
-        name: 'John Brown jr.',
-        age: 30,
-        address: 'New York No. 3 Lake Park',
-        children: [
-          {
-            key: 121,
-            name: 'Jimmy Brown',
-            age: 16,
-            address: 'New York No. 3 Lake Park'
-          }
-        ]
-      },
-      {
-        key: 13,
-        name: 'Jim Green sr.',
-        age: 72,
-        address: 'London No. 1 Lake Park',
-        children: [
-          {
-            key: 131,
-            name: 'Jim Green',
-            age: 42,
-            address: 'London No. 2 Lake Park',
-            children: [
-              {
-                key: 1311,
-                name: 'Jim Green jr.',
-                age: 25,
-                address: 'London No. 3 Lake Park'
-              },
-              {
-                key: 1312,
-                name: 'Jimmy Green sr.',
-                age: 18,
-                address: 'London No. 4 Lake Park'
-              }
-            ]
-          }
-        ]
+    title: '组件路径',
+    dataIndex: 'component',
+    key: 'component',
+    width: 120
+  },
+  {
+    title: '权限标识',
+    dataIndex: 'identifier',
+    key: 'identifier',
+    width: 120
+  },
+  {
+    title: '请求接口',
+    dataIndex: 'api',
+    key: 'api',
+    width: 120
+  },
+  {
+    title: '请求方法',
+    dataIndex: 'method',
+    key: 'method',
+    width: 120,
+    customRender: ({ value }) => {
+      if (value) {
+        return h(Tag, { color: methodColor[value] }, value)
       }
-    ]
+    }
   },
   {
-    key: 2,
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park'
+    dataIndex: 'operation'
   }
 ]
-const rowSelection = ref({
-  checkStrictly: false,
-  onChange: (selectedRowKeys: any, selectedRows: any) => {
-    console.log(
-      `selectedRowKeys: ${selectedRowKeys}`,
-      'selectedRows: ',
-      selectedRows
-    )
-  },
-  onSelect: (record: any, selected: any, selectedRows: any) => {
-    console.log(record, selected, selectedRows)
-  },
-  onSelectAll: (selected: any, selectedRows: any, changeRows: any) => {
-    console.log(selected, selectedRows, changeRows)
+const menuStore = useMenuStore()
+const data = ref<any[]>([])
+const loadData = async () => {
+  const res = await menuStore.getPageData()
+  data.value = res.data
+}
+onMounted(async () => {
+  await loadData()
+})
+
+// tubiao
+const filterOption = (
+  input: string,
+  option: { label: string; value: string }
+) => {
+  if (option.value) {
+    return option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
+  }
+}
+
+//菜单筛选
+const filterTreeNode = (inputValue: string, treeNode: any) => {
+  return treeNode.name.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
+}
+
+// modal
+const modalConfModel = reactive({
+  data: {
+    icon: null,
+    api: null,
+    status: 1,
+    name: '',
+    path: null,
+    type: 1,
+    component: null,
+    pid: null,
+    identifier: null,
+    method: null
   }
 })
+
+const modalEdit = async (record: any) => {
+  // 拿当前角色的菜单信息
+  modalConfModel.data = record
+}
+
+// event
+const modalClose = () => {
+  modalConfModel.data = {
+    icon: null,
+    api: null,
+    status: 1,
+    name: '',
+    path: null,
+    type: 1,
+    component: null,
+    pid: null,
+    identifier: null,
+    method: null
+  }
+}
 </script>
 
 <template>
-  <a-table :columns="columns" :data-source="data" :row-selection="rowSelection">
-  </a-table>
+  <div class="page-content">
+    <PageViewVue
+      page-name="菜单"
+      :pagination="false"
+      :expand="tableTree"
+      :modal-conf="{
+        model: modalConfModel.data,
+        row: {
+          gutter: 16
+        },
+        columns: [
+          {
+            itemType: 'tree-select',
+            name: 'pid',
+            label: '父级菜单',
+            col: { span: 24 },
+            treeData: data,
+            placeholder: '不选时，为顶层菜单',
+            showSearch: true,
+            filterTreeNode: filterTreeNode,
+            fieldNames: { children: 'children', label: 'name', value: 'id' }
+          },
+          {
+            itemType: 'input',
+            name: 'name',
+            label: '名称',
+            col: { span: 12 },
+            rules: [{ required: true, message: '请输入名称' }]
+          },
+          {
+            itemType: 'select',
+            name: 'type',
+            label: '类型',
+            col: { span: 12 },
+            rules: [{ required: true, message: '请选折类型' }],
+            options: Object.entries(menuType).map((key, value) => ({
+              label: key[1],
+              value
+            }))
+          },
+          {
+            itemType: 'select-icon',
+            name: 'icon',
+            label: '图标',
+            col: { span: 12 },
+            icons: icons,
+            showSearch: true,
+            filterOption: filterOption,
+            options: Object.entries(icons).map((key) => {
+              return { label: key[0], value: key[0] }
+            })
+          },
+          {
+            itemType: 'input',
+            name: 'component',
+            label: '组件',
+            col: { span: 12 }
+          },
+          { itemType: 'input', name: 'path', label: '路由', col: { span: 12 } },
+          {
+            itemType: 'input',
+            name: 'identifier',
+            label: '权限',
+            col: { span: 12 }
+          },
+          { itemType: 'input', name: 'api', label: '接口', col: { span: 12 } },
+          {
+            itemType: 'select',
+            name: 'method',
+            label: '方法',
+            col: { span: 12 },
+            placeholder: '不选默认为Null',
+            options: methodMap()
+          }
+        ]
+      }"
+      :table-columns="columns"
+      :store-object="menuStore"
+      :width="500"
+      @close="modalClose"
+      @edit="modalEdit"
+    />
+  </div>
 </template>
+
+<style scoped>
+.page-content {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+</style>

@@ -1,5 +1,5 @@
-import { defineComponent, ref, toRefs } from 'vue'
-import { Col, Form, Input, Row, Select, Tree } from 'ant-design-vue'
+import { defineComponent, h, ref, toRefs } from 'vue'
+import { Col, Form, Input, Row, Select, Tree, TreeSelect } from 'ant-design-vue'
 import type { FormPlusProps, IFormPlusItem } from './type'
 import type { FormInstance } from 'ant-design-vue/es/form'
 
@@ -42,6 +42,45 @@ export default defineComponent({
             disabled={item?.disabled}
             style={item?.style}
           ></Select>
+        )
+      }
+
+      // select 兼容icon
+      if (item?.itemType == 'select-icon') {
+        return (
+          <Select
+            v-model:value={model.value[item?.name]}
+            mode={item?.mode}
+            size={item?.size}
+            placeholder={item?.placeholder}
+            disabled={item?.disabled}
+            style={item?.style}
+            filterOption={item?.filterOption}
+            showSearch={item?.showSearch}
+          >
+            {item?.options?.map((option) => (
+              <Select.Option value={option.value}>
+                {h(item?.icons[option.label])}
+                {option.label}
+              </Select.Option>
+            ))}
+          </Select>
+        )
+      }
+
+      // tree select
+      if (item?.itemType == 'tree-select') {
+        return (
+          <TreeSelect
+            v-model:value={model.value[item?.name]}
+            showSearch={item?.showSearch}
+            dropdownStyle={item?.dropdownStyle}
+            treeData={item.treeData}
+            fieldNames={item.fieldNames}
+            disabled={item?.disabled}
+            placeholder={item?.placeholder}
+            filterTreeNode={item?.filterTreeNode}
+          ></TreeSelect>
         )
       }
 

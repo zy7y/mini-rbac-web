@@ -86,7 +86,7 @@ onUnmounted(() => {
       <a href="https://github.com/zy7y/mini-rbac-web.git">&nbsp; 代码获取</a>
     </span>
     <span
-      >后端：FastAPI Python MySQL TotoiseORM
+      >后端：FastAPI Python MySQL TortoiseORM
       <a href="https://github.com/zy7y/mini-rbac-serve.git">&nbsp; 代码获取</a>
     </span>
   </div>
