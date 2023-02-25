@@ -130,6 +130,7 @@ const modalEdit = async (record: any) => {
 
 <template>
   <PageViewVue
+    page-flag="role"
     :search-conf="{
       model: searchForm,
       row: {

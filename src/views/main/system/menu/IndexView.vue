@@ -124,6 +124,7 @@ const modalClose = () => {
 <template>
   <div class="page-content">
     <PageViewVue
+      page-flag="menu"
       page-name="菜单"
       :pagination="false"
       :expand="tableTree"

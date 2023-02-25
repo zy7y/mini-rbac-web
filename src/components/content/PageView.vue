@@ -17,6 +17,9 @@ interface PageProps {
   // modal
   modalConf: FormPlusProps
   width: number
+
+  // 按钮权限页面标识
+  pageFlag: string
 }
 
 const props = defineProps<PageProps>()
@@ -153,6 +156,7 @@ watch(isRequest, async (newValue, oldValue) => {
     <!-- 搜索 -->
     <template v-if="searchConf">
       <SearchForm
+        v-per="`${pageFlag}:query`"
         :row="searchConf.row"
         @search="handleSearch"
         @reset="handleReset"
@@ -164,7 +168,13 @@ watch(isRequest, async (newValue, oldValue) => {
     <a-card class="tablePage">
       <div class="head">
         <h2>{{ pageName + '列表' }}</h2>
-        <a-button type="primary" @click="clickAddBtn"> 新增</a-button>
+        <a-button
+          type="primary"
+          @click="clickAddBtn"
+          v-per="`${pageFlag}:create`"
+        >
+          新增</a-button
+        >
       </div>
       <a-table
         :columns="tableColumns"
@@ -179,9 +189,13 @@ watch(isRequest, async (newValue, oldValue) => {
         <template #bodyCell="{ column, record }">
           <template v-if="column.dataIndex === 'operation'">
             <!-- todo -->
-            <a @click="clickEditBtn(record)">编辑</a>
+            <a @click="clickEditBtn(record)" v-per="`${pageFlag}:update`"
+              >编辑</a
+            >
             <a-divider type="vertical" />
-            <a @click="clickDelBtn(record)">删除</a>
+            <a @click="clickDelBtn(record)" v-per="`${pageFlag}:delete`"
+              >删除</a
+            >
           </template>
         </template>
       </a-table>

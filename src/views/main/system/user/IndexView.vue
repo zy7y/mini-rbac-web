@@ -112,6 +112,7 @@ loadRoleOptions()
 
 <template>
   <PageViewVue
+    page-flag="user"
     :search-conf="{
       model: searchForm,
       row: {

@@ -26,4 +26,18 @@ if (
   router.push(userStore.firstMenu.path as string)
 }
 
+// 自定义指令 & 按钮权限校验
+app.directive('per', {
+  mounted(el: Element, binding: any) {
+    console.log(el, binding)
+    if (
+      // 是否存在
+      useUserStore().identifiers?.indexOf(binding.value) === -1
+    ) {
+      // 删除元素
+      el.parentNode && el.parentNode.removeChild(el)
+    }
+  }
+})
+
 app.mount('#app')
