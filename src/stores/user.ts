@@ -57,9 +57,7 @@ export const useUserStore = defineStore(
         info.value = infoRes.data
 
         // 获取权限信息
-        const currentRole = infoRes.data?.roles.find(
-          (role) => (role.status = 5)
-        )
+        const currentRole = infoRes.data?.roles.find((role) => role.status == 5)
         await loadMenuWithRouterByRoleId(currentRole?.rid as number)
       }
     }

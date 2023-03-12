@@ -52,11 +52,13 @@ const changeRoleHandleOk = async () => {
 
 // 切换角色 select 选中的value
 const selectRole = ref()
+
 const selectRoleOption = () => {
   // 过滤掉当前角色
-  return userStore.info?.roles
-    .filter((item) => item.status != 5)
-    .map((role) => ({ value: role.rid, label: role.name }))
+  return userStore.info?.roles.map((role) => ({
+    value: role.rid,
+    label: role.name
+  }))
 }
 </script>
 
